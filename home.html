@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SavvyLink System Technical Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: #2563eb;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: #f8fafc;
+            border-right: 1px solid #e2e8f0;
+            overflow-y: auto;
+            z-index: 100;
+            padding-top: 2rem;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 101;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0 1rem;
+        }
+
+        .nav-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            color: #64748b;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            background: #e2e8f0;
+            color: #2563eb;
+        }
+
+        .nav-link.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 0;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section h2 {
+            font-size: 1.8rem;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section h3 {
+            font-size: 1.4rem;
+            color: #334155;
+            margin: 1.5rem 0 1rem 0;
+        }
+
+        .section h4 {
+            font-size: 1.2rem;
+            color: #475569;
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            color: #475569;
+        }
+
+        .section ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .section li {
+            margin-bottom: 0.5rem;
+            color: #475569;
+        }
+
+        .media-container {
+            margin: 1.5rem 0;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .media-container iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+        }
+
+        .media-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .warning-box {
+            background: #fefce8;
+            border-left: 4px solid #eab308;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .url-link {
+            display: inline-block;
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+            color: #2563eb;
+            text-decoration: none;
+            margin: 0.5rem 0;
+            border: 1px solid #e2e8f0;
+        }
+
+        .url-link:hover {
+            background: #e2e8f0;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    
+    <div class="sidebar" id="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="#overview" class="nav-link">1. System Overview</a></li>
+            <li class="nav-item"><a href="#initial-setup" class="nav-link">2. Initial Setup</a></li>
+            <li class="nav-item"><a href="#post-activation" class="nav-link">3. Post-Activation</a></li>
+            <li class="nav-item"><a href="#user-management" class="nav-link">4. User Management</a></li>
+            <li class="nav-item"><a href="#risk-analysis" class="nav-link">5. Risk Analysis</a></li>
+            <li class="nav-item"><a href="#contact-repository" class="nav-link">6. Contact Repository</a></li>
+            <li class="nav-item"><a href="#public-directory" class="nav-link">7. Public Directory</a></li>
+            <li class="nav-item"><a href="#customer-support" class="nav-link">8. Customer Support</a></li>
+            <li class="nav-item"><a href="#system-integration" class="nav-link">9. System Integration</a></li>
+            <li class="nav-item"><a href="#security" class="nav-link">10. Security & Compliance</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="header">
+                <h1>SavvyLink System</h1>
+                <p>Technical Documentation v2.1</p>
+            </div>
+
+            <div class="content">
+                <section id="overview" class="section">
+                    <h2>1. System Overview</h2>
+                    <p>SavvyLink is a comprehensive risk assessment and management platform that enables businesses to evaluate client risk profiles through automated workflows and integrations. The system handles account creation, user management, risk analysis, and provides a public directory for risk profile verification.</p>
+                </section>
+
+                <section id="initial-setup" class="section">
+                    <h2>2. Initial Setup and Account Creation</h2>
+                    
+                    <div class="media-container">
+                        <iframe src="https://www.loom.com/embed/c57f54cd3e354ed2a2f66e0a3d61045d" allowfullscreen></iframe>
+                    </div>
+
+                    <h3>2.1 Landing Page Access</h3>
+                    
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686586ce6611c0b32c3f5c0c.jpeg" alt="Landing Page">
+                    </div>
+
+                    <div class="info-box">
+                        <strong>URL:</strong> <a href="https://savvylink.nilsdigital.com/inicio" class="url-link" target="_blank">https://savvylink.nilsdigital.com/inicio</a><br>
+                        <strong>Authentication:</strong> Password protected<br>
+                        <strong>Login Credentials:</strong> SL2025
+                    </div>
+
+                    <h3>2.2 Account Creation Process</h3>
+                    
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686586cd8522133ec37abdcc.jpeg" alt="Account Creation">
+                    </div>
+
+                    <p>To create a new account:</p>
+                    <ul>
+                        <li>Navigate to the password-protected landing page</li>
+                        <li>Complete the checkout form with the following information:
+                            <ul>
+                                <li>Select business segment from available options</li>
+                                <li>Enter client name</li>
+                                <li>Provide billing email address</li>
+                            </ul>
+                        </li>
+                        <li>Submit checkout form to create backend account</li>
+                    </ul>
+
+                    <h3>2.3 Account Activation</h3>
+                    
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686586cdf9270758d11fbcd8.jpeg" alt="Account Activation">
+                    </div>
+
+                    <ul>
+                        <li>System generates activation email sent to the billing email address</li>
+                        <li>Admin must click activation link in email to activate account</li>
+                    </ul>
+
+                    <div class="warning-box">
+                        <strong>Security Note:</strong> Account activation is mandatory for security compliance
+                    </div>
+                </section>
+
+                <section id="post-activation" class="section">
+                    <h2>3. Post-Activation Workflow</h2>
+
+                    <h3>3.1 Automatic Workflow Trigger</h3>
+                    
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686586cd85221362137abdcd.jpeg" alt="Workflow Trigger">
+                    </div>
+
+                    <ul>
+                        <li><strong>Trigger Event:</strong> Account activation</li>
+                        <li><strong>Parameter Detection:</strong> System captures business segment code from URL</li>
+                        <li><strong>Workflow Name:</strong> "Add Admins to Location and Update Custom Values"</li>
+                    </ul>
+
+                    <h3>3.2 Backend Processing</h3>
+                    <ul>
+                        <li><strong>Webhook Execution:</strong> Activation triggers webhook to backend system</li>
+                        <li><strong>Location ID Processing:</strong> Backend checks and validates location ID</li>
+                        <li><strong>Custom Field Updates:</strong>
+                            <ul>
+                                <li>Adds business segment value to custom field</li>
+                                <li>Updates subaccount information for risk analysis</li>
+                            </ul>
+                        </li>
+                        <li><strong>Admin Assignment:</strong> All designated admins are automatically added to subaccount</li>
+                        <li><strong>Database Matching:</strong> System compares subaccount name to database records using associated location ID</li>
+                    </ul>
+                </section>
+
+                <section id="user-management" class="section">
+                    <h2>4. User Management</h2>
+
+                    <h3>4.1 Adding Client Users</h3>
+                    
+                    <div class="media-container">
+                        <iframe src="https://www.loom.com/embed/1654419ba023412bba3549c90c03ff86" allowfullscreen></iframe>
+                    </div>
+
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/68658870d60a23d7f2799f3a.jpeg" alt="Adding Users">
+                    </div>
+
+                    <ul>
+                        <li><strong>Navigation:</strong> Go to Sites → Forms tab → Preview</li>
+                        <li><strong>Form Completion:</strong> Fill out contact information form for new users</li>
+                        <li><strong>Backend Processing:</strong> Form submission triggers webhook to backend</li>
+                        <li><strong>User Assignment:</strong> System automatically assigns user to correct account</li>
+                    </ul>
+
+                    <h3>4.2 Automated Notifications</h3>
+                    
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686588706611c0d5883f5ebc.jpeg" alt="Webhook Trigger">
+                    </div>
+
+                    <p><strong>Webhook Trigger:</strong> User addition sends webhook to Savvy Link admin account</p>
+
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686588e2f9270720e21fbfbf.jpeg" alt="Notifications">
+                    </div>
+
+                    <ul>
+                        <li><strong>WhatsApp Integration:</strong> System sends automated WhatsApp message with instructions</li>
+                        <li><strong>Email Notification:</strong> Automated email sent with setup instructions</li>
+                    </ul>
+                </section>
+
+                <section id="risk-analysis" class="section">
+                    <h2>5. Risk Analysis System</h2>
+
+                    <h3>5.1 Contact Addition Methods</h3>
+
+                    <h4>5.1.1 Minimum Diligence Form</h4>
+                    
+                    <div class="media-container">
+                        <iframe src="https://www.loom.com/embed/7c42cf0bd31c4b1d9b9060facb23a104" allowfullscreen></iframe>
+                    </div>
+
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/6865896a3cf02daec1501df4.jpeg" alt="Minimum Diligence Form">
+                    </div>
+
+                    <ul>
+                        <li><strong>Location:</strong> Sites → Forms</li>
+                        <li><strong>Process:</strong> Form completion triggers backend processing webhook</li>
+                        <li><strong>Scope:</strong> Basic risk assessment only</li>
+                    </ul>
+
+                    <h4>5.1.2 Basic Diligence Documents</h4>
+                    
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686589e685221369507ac2af.jpeg" alt="Basic Diligence">
+                    </div>
+
+                    <div class="media-container">
+                        <iframe src="https://www.loom.com/embed/72323e0d2cfd4153aeb1cbb23c539308" allowfullscreen></iframe>
+                    </div>
+
+                    <ul>
+                        <li><strong>Location:</strong> Documents section</li>
+                        <li><strong>Process:</strong> Document completion triggers backend processing</li>
+                        <li><strong>Scope:</strong> Comprehensive risk assessment across 14 business segments</li>
+                    </ul>
+
+                    <h4>5.1.3 Bulk Contact Upload</h4>
+                    
+                    <div class="media-container">
+                        <iframe src="https://www.loom.com/embed/764fd92ffcd94903992b878e331727d5" allowfullscreen></iframe>
+                    </div>
+
+                    <ul>
+                        <li><strong>Requirements:</strong> All required fields must be mapped correctly</li>
+                        <li><strong>Processing:</strong> Add "send to process" tag to trigger backend processing</li>
+                        <li><strong>Validation:</strong> System checks for missing required fields before processing</li>
+                    </ul>
+
+                    <h3>5.2 Risk Assessment Algorithm</h3>
+
+                    <h4>5.2.1 Backend Processing</h4>
+                    <ul>
+                        <li><strong>Data Input:</strong> Contact information received from various sources</li>
+                        <li><strong>Algorithm Execution:</strong> Backend processes data through risk assessment algorithm</li>
+                        <li><strong>Score Generation:</strong> System calculates two key metrics:
+                            <ul>
+                                <li>Minimum score</li>
+                                <li>Riesgo inherente total (Total inherent risk)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Location Assignment:</strong> Results returned to correct location using location ID matching</li>
+                    </ul>
+
+                    <h4>5.2.2 Risk Profile Determination</h4>
+                    
+                    <div class="media-container">
+                        <iframe src="https://www.loom.com/embed/837fe5f627004032833b8263762df080" allowfullscreen></iframe>
+                    </div>
+
+                    <p><strong>Automation Logic:</strong> System applies predefined logic to categorize risk levels:</p>
+                    <ul>
+                        <li>Bajo (Low)</li>
+                        <li>Medio (Medium)</li>
+                        <li>Alto (High)</li>
+                    </ul>
+
+                    <p><strong>Assessment Scope:</strong></p>
+                    <ul>
+                        <li><strong>Basic Diligence:</strong> Risk determined across 14 different business segments</li>
+                        <li><strong>Minimum Diligence:</strong> Limited to checklists and country assessments</li>
+                    </ul>
+                </section>
+
+                <section id="contact-repository" class="section">
+                    <h2>6. Contact Repository and Management</h2>
+
+                    <h3>6.1 SL Admin Account Repository</h3>
+                    <ul>
+                        <li><strong>Function:</strong> Central repository for all processed contacts</li>
+                        <li><strong>Trigger:</strong> All processed contacts automatically added to SL Admin Account</li>
+                        <li><strong>Purpose:</strong> Maintains comprehensive database of all system contacts</li>
+                    </ul>
+
+                    <h3>6.2 Risk Value Updates</h3>
+                    <ul>
+                        <li><strong>Update Trigger:</strong> Any risk value modification in client accounts</li>
+                        <li><strong>Webhook Execution:</strong> Triggers automation in subaccount</li>
+                        <li><strong>Backend Sync:</strong> Webhook sent to backend for contact information upsert</li>
+                        <li><strong>Repository Update:</strong> Contact information updated in repository account</li>
+                    </ul>
+
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686590c63cf02d1888503bf7.jpeg" alt="Risk Updates">
+                    </div>
+
+                    <h3>6.3 High-Risk Contact Notifications</h3>
+                    
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686590c6b89cfbc8fc20c418.jpeg" alt="High Risk Notifications">
+                    </div>
+
+                    <ul>
+                        <li><strong>Risk Threshold:</strong> Medium or high-risk contacts trigger notifications</li>
+                        <li><strong>Webhook Process:</strong> Sends webhook to SL Admin account</li>
+                        <li><strong>Email Alerts:</strong> Automated email notifications sent to team members</li>
+                        <li><strong>Content:</strong> Email includes contact origin details and risk information</li>
+                    </ul>
+                </section>
+
+                <section id="public-directory" class="section">
+                    <h2>7. Public Directory and Contact Communication</h2>
+
+                    <h3>7.1 Directory Integration</h3>
+                    <div class="info-box">
+                        <strong>URL:</strong> <a href="https://cdd.nilsdigital.com/" class="url-link" target="_blank">https://cdd.nilsdigital.com/</a>
+                    </div>
+
+                    <ul>
+                        <li><strong>Data Source:</strong> Repository account feeds the public directory</li>
+                        <li><strong>Lookup Method:</strong> Contact ID serves as unique lookup key</li>
+                        <li><strong>Functionality:</strong> Public directory retrieval of contact information and risk profiles</li>
+                    </ul>
+
+                    <h3>7.2 Automated Contact Communication</h3>
+                    
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686590c6b89cfbc8fc20c418.jpeg" alt="Contact Communication">
+                    </div>
+
+                    <ul>
+                        <li><strong>Processing Trigger:</strong> Risk assessment completion triggers communication workflow</li>
+                        <li><strong>Message Content:</strong>
+                            <ul>
+                                <li>Contact information summary</li>
+                                <li>Direct link to personal risk profile</li>
+                            </ul>
+                        </li>
+                        <li><strong>Delivery Methods:</strong>
+                            <ul>
+                                <li>WhatsApp message via Savvy AI</li>
+                                <li>Email notification</li>
+                            </ul>
+                        </li>
+                        <li><strong>Main Account:</strong> All communications processed through SL Admin account</li>
+                    </ul>
+
+                    <h3>7.3 Contact ID System</h3>
+                    <ul>
+                        <li><strong>Purpose:</strong> Unique identifier for directory lookups</li>
+                        <li><strong>Usage:</strong> Contacts can search their profiles using their unique contact ID</li>
+                        <li><strong>Benefits:</strong> Simplified access for both individuals and businesses to verify risk profiles</li>
+                    </ul>
+                </section>
+
+                <section id="customer-support" class="section">
+                    <h2>8. Customer Support System</h2>
+
+                    <h3>8.1 Savvy AI Chatbot</h3>
+                    <ul>
+                        <li><strong>Function:</strong> AI-powered customer support chatbot</li>
+                        <li><strong>Training:</strong> Equipped to handle most common questions and inquiries</li>
+                        <li><strong>Escalation:</strong> Redirects complex queries to human support system</li>
+                    </ul>
+
+                    <h3>8.2 Human Support Pipeline</h3>
+                    <div class="info-box">
+                        <strong>URL:</strong> <a href="https://savvysoporte.nilsdigital.com/inicia" class="url-link" target="_blank">https://savvysoporte.nilsdigital.com/inicia</a>
+                    </div>
+
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686591723cf02d67d7503c96.jpeg" alt="Support Landing">
+                    </div>
+
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686591a9dbe4a52cb1b69778.jpeg" alt="Support Form">
+                    </div>
+
+                    <div class="media-container">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686591ec6611c066aa3f734a.jpeg" alt="Support Pipeline">
+                    </div>
+
+                    <ul>
+                        <li><strong>Escalation Trigger:</strong> AI chatbot unable to resolve query</li>
+                        <li><strong>Landing Page:</strong> User redirected to dedicated support form page</li>
+                        <li><strong>Form Submission:</strong> Support request form completion triggers notifications</li>
+                        <li><strong>Team Notification:</strong> Email alerts sent to support team members</li>
+                        <li><strong>Pipeline Addition:</strong> Contact automatically added to support pipeline for tracking</li>
+                    </ul>
+                </section>
+
+                <section id="system-integration" class="section">
+                    <h2>9. System Integration Points</h2>
+
+                    <h3>9.1 Key Webhooks</h3>
+                    <ul>
+                        <li>Account activation webhook</li>
+                        <li>User addition webhook</li>
+                        <li>Risk processing webhook</li>
+                        <li>Risk update webhook</li>
+                        <li>Support request webhook</li>
+                    </ul>
+
+                    <h3>9.2 External Integrations</h3>
+                    <ul>
+                        <li>WhatsApp messaging system</li>
+                        <li>Email notification system</li>
+                        <li>Backend risk assessment algorithm</li>
+                        <li>Public directory system</li>
+                    </ul>
+                </section>
+
+                <section id="security" class="section">
+                    <h2>10. Security and Compliance</h2>
+
+                    <h3>10.1 Access Control</h3>
+                    <ul>
+                        <li>Password-protected landing page</li>
+                        <li>Email activation requirement for all accounts</li>
+                        <li>Unique contact ID system for directory access</li>
+                    </ul>
+
+                    <h3>10.2 Data Processing</h3>
+                    <ul>
+                        <li>Automated webhook security</li>
+                        <li>Location ID validation</li>
+                        <li>Required field validation for bulk uploads</li>
+                        <li>Risk-based notification system for high-risk contacts</li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Auto-highlight active section in navigation
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                
+                // Close sidebar on mobile after clicking
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('open');
+                }
+            });
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.querySelector('.sidebar-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(e.target) && 
+                !sidebarToggle.contains(e.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>
