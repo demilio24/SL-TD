@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SavvyLink System Technical Documentation</title>
+    <title>Documentación Técnica del Sistema SavvyLink</title>
     <style>
         * {
             margin: 0;
@@ -42,6 +42,41 @@
         .header p {
             font-size: 1.1rem;
             opacity: 0.9;
+        }
+
+        .language-selector {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            z-index: 1000;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .language-btn {
+            display: block;
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #475569;
+            transition: all 0.2s;
+            min-width: 120px;
+            text-align: left;
+        }
+
+        .language-btn:hover {
+            background: #f8fafc;
+            color: #2563eb;
+        }
+
+        .language-btn.active {
+            background: #2563eb;
+            color: white;
         }
 
         .sidebar {
@@ -155,6 +190,7 @@
             border: 1px solid #e2e8f0;
             border-radius: 8px;
             overflow: hidden;
+            position: relative;
         }
 
         .media-container iframe {
@@ -167,6 +203,27 @@
             width: 100%;
             height: auto;
             display: block;
+            cursor: zoom-in;
+            transition: transform 0.2s;
+        }
+
+        .media-container img:hover {
+            transform: scale(1.02);
+        }
+
+        .image-caption {
+            padding: 1rem;
+            background: #f1f5f9;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .image-caption strong {
+            color: #1e293b;
+            display: block;
+            margin-bottom: 0.5rem;
         }
 
         .code-block {
@@ -195,6 +252,14 @@
             border-radius: 0 6px 6px 0;
         }
 
+        .automation-box {
+            background: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
         .url-link {
             display: inline-block;
             background: #f1f5f9;
@@ -209,6 +274,41 @@
 
         .url-link:hover {
             background: #e2e8f0;
+        }
+
+        /* Modal styles for image zoom */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #bbb;
         }
 
         @media (max-width: 768px) {
@@ -236,462 +336,149 @@
             .content {
                 padding: 1rem;
             }
+
+            .language-selector {
+                bottom: 1rem;
+                left: 1rem;
+            }
         }
     </style>
 </head>
 <body>
     <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
     
+    <div class="language-selector">
+        <button class="language-btn active" data-lang="es">🇪🇸 Español</button>
+        <button class="language-btn" data-lang="en">🇺🇸 English</button>
+    </div>
+
+    <!-- Modal for image zoom -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+    
     <div class="sidebar" id="sidebar">
         <ul class="nav-menu">
-            <li class="nav-item"><a href="#overview" class="nav-link">1. System Overview</a></li>
-            <li class="nav-item"><a href="#initial-setup" class="nav-link">2. Initial Setup</a></li>
-            <li class="nav-item"><a href="#post-activation" class="nav-link">3. Post-Activation</a></li>
-            <li class="nav-item"><a href="#user-management" class="nav-link">4. User Management</a></li>
-            <li class="nav-item"><a href="#risk-analysis" class="nav-link">5. Risk Analysis</a></li>
-            <li class="nav-item"><a href="#contact-repository" class="nav-link">6. Contact Repository</a></li>
-            <li class="nav-item"><a href="#public-directory" class="nav-link">7. Public Directory</a></li>
-            <li class="nav-item"><a href="#customer-support" class="nav-link">8. Customer Support</a></li>
-            <li class="nav-item"><a href="#system-integration" class="nav-link">9. System Integration</a></li>
-            <li class="nav-item"><a href="#security" class="nav-link">10. Security & Compliance</a></li>
+            <li class="nav-item"><a href="#overview" class="nav-link" data-es="1. Resumen del Sistema" data-en="1. System Overview">1. Resumen del Sistema</a></li>
+            <li class="nav-item"><a href="#initial-setup" class="nav-link" data-es="2. Configuración Inicial" data-en="2. Initial Setup">2. Configuración Inicial</a></li>
+            <li class="nav-item"><a href="#post-activation" class="nav-link" data-es="3. Post-Activación" data-en="3. Post-Activation">3. Post-Activación</a></li>
+            <li class="nav-item"><a href="#user-management" class="nav-link" data-es="4. Gestión de Usuarios" data-en="4. User Management">4. Gestión de Usuarios</a></li>
+            <li class="nav-item"><a href="#risk-analysis" class="nav-link" data-es="5. Análisis de Riesgo" data-en="5. Risk Analysis">5. Análisis de Riesgo</a></li>
+            <li class="nav-item"><a href="#contact-repository" class="nav-link" data-es="6. Repositorio de Contactos" data-en="6. Contact Repository">6. Repositorio de Contactos</a></li>
+            <li class="nav-item"><a href="#public-directory" class="nav-link" data-es="7. Directorio Público" data-en="7. Public Directory">7. Directorio Público</a></li>
+            <li class="nav-item"><a href="#customer-support" class="nav-link" data-es="8. Soporte al Cliente" data-en="8. Customer Support">8. Soporte al Cliente</a></li>
+            <li class="nav-item"><a href="#system-integration" class="nav-link" data-es="9. Integración del Sistema" data-en="9. System Integration">9. Integración del Sistema</a></li>
+            <li class="nav-item"><a href="#security" class="nav-link" data-es="10. Seguridad y Cumplimiento" data-en="10. Security & Compliance">10. Seguridad y Cumplimiento</a></li>
         </ul>
     </div>
 
     <div class="container">
         <div class="main-content">
             <div class="header">
-                <h1>SavvyLink System</h1>
-                <p>Technical Documentation v2.1</p>
+                <h1 data-es="Sistema SavvyLink" data-en="SavvyLink System">Sistema SavvyLink</h1>
+                <p data-es="Documentación Técnica v2.1" data-en="Technical Documentation v2.1">Documentación Técnica v2.1</p>
             </div>
 
             <div class="content">
                 <section id="overview" class="section">
-                    <h2>1. System Overview</h2>
-                    <p>SavvyLink is a comprehensive risk assessment and management platform that enables businesses to evaluate client risk profiles through automated workflows and integrations. The system handles account creation, user management, risk analysis, and provides a public directory for risk profile verification.</p>
+                    <h2 data-es="1. Resumen del Sistema" data-en="1. System Overview">1. Resumen del Sistema</h2>
+                    <p data-es="SavvyLink es una plataforma integral de evaluación y gestión de riesgos que permite a las empresas evaluar perfiles de riesgo de clientes a través de flujos de trabajo automatizados e integraciones. El sistema maneja la creación de cuentas, gestión de usuarios, análisis de riesgo y proporciona un directorio público para verificación de perfiles de riesgo." data-en="SavvyLink is a comprehensive risk assessment and management platform that enables businesses to evaluate client risk profiles through automated workflows and integrations. The system handles account creation, user management, risk analysis, and provides a public directory for risk profile verification.">SavvyLink es una plataforma integral de evaluación y gestión de riesgos que permite a las empresas evaluar perfiles de riesgo de clientes a través de flujos de trabajo automatizados e integraciones. El sistema maneja la creación de cuentas, gestión de usuarios, análisis de riesgo y proporciona un directorio público para verificación de perfiles de riesgo.</p>
                 </section>
 
                 <section id="initial-setup" class="section">
-                    <h2>2. Initial Setup and Account Creation</h2>
+                    <h2 data-es="2. Configuración Inicial y Creación de Cuentas" data-en="2. Initial Setup and Account Creation">2. Configuración Inicial y Creación de Cuentas</h2>
                     
                     <div class="media-container">
                         <iframe src="https://www.loom.com/embed/c57f54cd3e354ed2a2f66e0a3d61045d" allowfullscreen></iframe>
                     </div>
 
-                    <h3>2.1 Landing Page Access</h3>
+                    <h3 data-es="2.1 Acceso a la Página de Inicio" data-en="2.1 Landing Page Access">2.1 Acceso a la Página de Inicio</h3>
                     
                     <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686586ce6611c0b32c3f5c0c.jpeg" alt="Landing Page">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686586ce6611c0b32c3f5c0c.jpeg" alt="Página de Inicio" onclick="openModal(this)">
+                        <div class="image-caption">
+                            <strong data-es="Funcionamiento de la Automatización:" data-en="Automation Functionality:">Funcionamiento de la Automatización:</strong>
+                            <span data-es="Esta página de inicio funciona como el punto de entrada protegido para nuevos clientes. El sistema utiliza autenticación por contraseña (SL2025) como primera capa de seguridad. Una vez que el usuario ingresa la contraseña correcta, se le redirige al formulario de checkout. Esta interfaz está diseñada para capturar información específica del segmento de negocio del cliente, la cual será utilizada posteriormente por el algoritmo de evaluación de riesgos para configurar campos personalizados y determinar qué tipos de análisis aplicar a los contactos de ese cliente." data-en="This landing page functions as the protected entry point for new clients. The system uses password authentication (SL2025) as the first security layer. Once the user enters the correct password, they are redirected to the checkout form. This interface is designed to capture specific business segment information from the client, which will later be used by the risk assessment algorithm to configure custom fields and determine what types of analysis to apply to that client's contacts.">Esta página de inicio funciona como el punto de entrada protegido para nuevos clientes. El sistema utiliza autenticación por contraseña (SL2025) como primera capa de seguridad. Una vez que el usuario ingresa la contraseña correcta, se le redirige al formulario de checkout. Esta interfaz está diseñada para capturar información específica del segmento de negocio del cliente, la cual será utilizada posteriormente por el algoritmo de evaluación de riesgos para configurar campos personalizados y determinar qué tipos de análisis aplicar a los contactos de ese cliente.</span>
+                        </div>
                     </div>
 
                     <div class="info-box">
-                        <strong>URL:</strong> <a href="https://savvylink.nilsdigital.com/inicio" class="url-link" target="_blank">https://savvylink.nilsdigital.com/inicio</a><br>
-                        <strong>Authentication:</strong> Password protected<br>
-                        <strong>Login Credentials:</strong> SL2025
+                        <strong data-es="URL:" data-en="URL:">URL:</strong> <a href="https://savvylink.nilsdigital.com/inicio" class="url-link" target="_blank">https://savvylink.nilsdigital.com/inicio</a><br>
+                        <strong data-es="Autenticación:" data-en="Authentication:">Autenticación:</strong> <span data-es="Protegida por contraseña" data-en="Password protected">Protegida por contraseña</span><br>
+                        <strong data-es="Credenciales de Acceso:" data-en="Login Credentials:">Credenciales de Acceso:</strong> SL2025
                     </div>
 
-                    <h3>2.2 Account Creation Process</h3>
+                    <h3 data-es="2.2 Proceso de Creación de Cuentas" data-en="2.2 Account Creation Process">2.2 Proceso de Creación de Cuentas</h3>
                     
                     <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686586cd8522133ec37abdcc.jpeg" alt="Account Creation">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686586cd8522133ec37abdcc.jpeg" alt="Creación de Cuenta" onclick="openModal(this)">
+                        <div class="image-caption">
+                            <strong data-es="Funcionamiento de la Automatización:" data-en="Automation Functionality:">Funcionamiento de la Automatización:</strong>
+                            <span data-es="Este formulario de checkout es el núcleo del sistema de configuración automática. Cuando el usuario completa este formulario, se capturan tres elementos críticos: (1) El segmento de negocio seleccionado, que determina qué campos personalizados y configuraciones de riesgo se aplicarán; (2) El nombre del cliente, que se usará para nombear la subcuenta en GoHighLevel; (3) El email de facturación, al cual se enviará el enlace de activación. El submit de este formulario desencadena un webhook que crea la infraestructura backend del cliente, incluyendo la subcuenta en GoHighLevel, la configuración de tokens de API, y la preparación de los campos personalizados según el segmento de negocio seleccionado." data-en="This checkout form is the core of the automatic configuration system. When the user completes this form, three critical elements are captured: (1) The selected business segment, which determines what custom fields and risk configurations will be applied; (2) The client name, which will be used to name the subaccount in GoHighLevel; (3) The billing email, to which the activation link will be sent. Submitting this form triggers a webhook that creates the client's backend infrastructure, including the GoHighLevel subaccount, API token configuration, and preparation of custom fields according to the selected business segment.">Este formulario de checkout es el núcleo del sistema de configuración automática. Cuando el usuario completa este formulario, se capturan tres elementos críticos: (1) El segmento de negocio seleccionado, que determina qué campos personalizados y configuraciones de riesgo se aplicarán; (2) El nombre del cliente, que se usará para nombear la subcuenta en GoHighLevel; (3) El email de facturación, al cual se enviará el enlace de activación. El submit de este formulario desencadena un webhook que crea la infraestructura backend del cliente, incluyendo la subcuenta en GoHighLevel, la configuración de tokens de API, y la preparación de los campos personalizados según el segmento de negocio seleccionado.</span>
+                        </div>
                     </div>
 
-                    <p>To create a new account:</p>
+                    <p data-es="Para crear una nueva cuenta:" data-en="To create a new account:">Para crear una nueva cuenta:</p>
                     <ul>
-                        <li>Navigate to the password-protected landing page</li>
-                        <li>Complete the checkout form with the following information:
+                        <li data-es="Navegar a la página de inicio protegida por contraseña" data-en="Navigate to the password-protected landing page">Navegar a la página de inicio protegida por contraseña</li>
+                        <li data-es="Completar el formulario de checkout con la siguiente información:" data-en="Complete the checkout form with the following information:">Completar el formulario de checkout con la siguiente información:
                             <ul>
-                                <li>Select business segment from available options</li>
-                                <li>Enter client name</li>
-                                <li>Provide billing email address</li>
+                                <li data-es="Seleccionar segmento de negocio de las opciones disponibles" data-en="Select business segment from available options">Seleccionar segmento de negocio de las opciones disponibles</li>
+                                <li data-es="Ingresar nombre del cliente" data-en="Enter client name">Ingresar nombre del cliente</li>
+                                <li data-es="Proporcionar dirección de email de facturación" data-en="Provide billing email address">Proporcionar dirección de email de facturación</li>
                             </ul>
                         </li>
-                        <li>Submit checkout form to create backend account</li>
+                        <li data-es="Enviar formulario de checkout para crear cuenta backend" data-en="Submit checkout form to create backend account">Enviar formulario de checkout para crear cuenta backend</li>
                     </ul>
 
-                    <h3>2.3 Account Activation</h3>
+                    <h3 data-es="2.3 Activación de Cuenta" data-en="2.3 Account Activation">2.3 Activación de Cuenta</h3>
                     
                     <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686586cdf9270758d11fbcd8.jpeg" alt="Account Activation">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686586cdf9270758d11fbcd8.jpeg" alt="Activación de Cuenta" onclick="openModal(this)">
+                        <div class="image-caption">
+                            <strong data-es="Funcionamiento de la Automatización:" data-en="Automation Functionality:">Funcionamiento de la Automatización:</strong>
+                            <span data-es="El email de activación es un componente crítico del flujo de seguridad. El sistema genera automáticamente un enlace único que contiene parámetros específicos del cliente (como el ID de ubicación y código de segmento). Cuando el administrador hace clic en este enlace, se desencadena el webhook de post-activación que: (1) Valida la identidad del cliente; (2) Activa todos los permisos de la subcuenta; (3) Configura los campos personalizados según el segmento de negocio; (4) Asigna automáticamente todos los administradores designados a la subcuenta; (5) Sincroniza la información con la base de datos principal para que el algoritmo de riesgo pueda procesar futuros contactos correctamente." data-en="The activation email is a critical component of the security flow. The system automatically generates a unique link containing client-specific parameters (such as location ID and segment code). When the administrator clicks this link, it triggers the post-activation webhook that: (1) Validates the client's identity; (2) Activates all subaccount permissions; (3) Configures custom fields according to the business segment; (4) Automatically assigns all designated administrators to the subaccount; (5) Synchronizes information with the main database so the risk algorithm can properly process future contacts.">El email de activación es un componente crítico del flujo de seguridad. El sistema genera automáticamente un enlace único que contiene parámetros específicos del cliente (como el ID de ubicación y código de segmento). Cuando el administrador hace clic en este enlace, se desencadena el webhook de post-activación que: (1) Valida la identidad del cliente; (2) Activa todos los permisos de la subcuenta; (3) Configura los campos personalizados según el segmento de negocio; (4) Asigna automáticamente todos los administradores designados a la subcuenta; (5) Sincroniza la información con la base de datos principal para que el algoritmo de riesgo pueda procesar futuros contactos correctamente.</span>
+                        </div>
                     </div>
 
                     <ul>
-                        <li>System generates activation email sent to the billing email address</li>
-                        <li>Admin must click activation link in email to activate account</li>
+                        <li data-es="El sistema genera un email de activación enviado a la dirección de email de facturación" data-en="System generates activation email sent to the billing email address">El sistema genera un email de activación enviado a la dirección de email de facturación</li>
+                        <li data-es="El administrador debe hacer clic en el enlace de activación en el email para activar la cuenta" data-en="Admin must click activation link in email to activate account">El administrador debe hacer clic en el enlace de activación en el email para activar la cuenta</li>
                     </ul>
 
                     <div class="warning-box">
-                        <strong>Security Note:</strong> Account activation is mandatory for security compliance
+                        <strong data-es="Nota de Seguridad:" data-en="Security Note:">Nota de Seguridad:</strong> <span data-es="La activación de cuenta es obligatoria para el cumplimiento de seguridad" data-en="Account activation is mandatory for security compliance">La activación de cuenta es obligatoria para el cumplimiento de seguridad</span>
                     </div>
                 </section>
 
                 <section id="post-activation" class="section">
-                    <h2>3. Post-Activation Workflow</h2>
+                    <h2 data-es="3. Flujo de Trabajo Post-Activación" data-en="3. Post-Activation Workflow">3. Flujo de Trabajo Post-Activación</h2>
 
-                    <h3>3.1 Automatic Workflow Trigger</h3>
+                    <h3 data-es="3.1 Activador Automático de Flujo de Trabajo" data-en="3.1 Automatic Workflow Trigger">3.1 Activador Automático de Flujo de Trabajo</h3>
                     
                     <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686586cd85221362137abdcd.jpeg" alt="Workflow Trigger">
+                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686586cd85221362137abdcd.jpeg" alt="Activador de Flujo de Trabajo" onclick="openModal(this)">
+                        <div class="image-caption">
+                            <strong data-es="Funcionamiento de la Automatización:" data-en="Automation Functionality:">Funcionamiento de la Automatización:</strong>
+                            <span data-es="Esta imagen muestra el panel de automatización de GoHighLevel donde se ejecuta el flujo 'Add Admins to Location and Update Custom Values'. Este workflow se activa automáticamente cuando se detecta la activación de cuenta. El sistema captura el código del segmento de negocio desde la URL del enlace de activación y lo utiliza para: (1) Determinar qué campos personalizados crear (de los 14 segmentos disponibles); (2) Configurar los permisos específicos para ese tipo de negocio; (3) Establecer las reglas de análisis de riesgo apropiadas; (4) Sincronizar toda la información con el repositorio central para que el algoritmo pueda procesar contactos correctamente. Este proceso es completamente automático y no requiere intervención manual." data-en="This image shows the GoHighLevel automation panel where the 'Add Admins to Location and Update Custom Values' workflow is executed. This workflow is automatically triggered when account activation is detected. The system captures the business segment code from the activation link URL and uses it to: (1) Determine which custom fields to create (from the 14 available segments); (2) Configure specific permissions for that business type; (3) Establish appropriate risk analysis rules; (4) Synchronize all information with the central repository so the algorithm can process contacts correctly. This process is completely automatic and requires no manual intervention.">Esta imagen muestra el panel de automatización de GoHighLevel donde se ejecuta el flujo 'Add Admins to Location and Update Custom Values'. Este workflow se activa automáticamente cuando se detecta la activación de cuenta. El sistema captura el código del segmento de negocio desde la URL del enlace de activación y lo utiliza para: (1) Determinar qué campos personalizados crear (de los 14 segmentos disponibles); (2) Configurar los permisos específicos para ese tipo de negocio; (3) Establecer las reglas de análisis de riesgo apropiadas; (4) Sincronizar toda la información con el repositorio central para que el algoritmo pueda procesar contactos correctamente. Este proceso es completamente automático y no requiere intervención manual.</span>
+                        </div>
                     </div>
 
                     <ul>
-                        <li><strong>Trigger Event:</strong> Account activation</li>
-                        <li><strong>Parameter Detection:</strong> System captures business segment code from URL</li>
-                        <li><strong>Workflow Name:</strong> "Add Admins to Location and Update Custom Values"</li>
+                        <li><strong data-es="Evento Disparador:" data-en="Trigger Event:">Evento Disparador:</strong> <span data-es="Activación de cuenta" data-en="Account activation">Activación de cuenta</span></li>
+                        <li><strong data-es="Detección de Parámetros:" data-en="Parameter Detection:">Detección de Parámetros:</strong> <span data-es="El sistema captura el código del segmento de negocio desde la URL" data-en="System captures business segment code from URL">El sistema captura el código del segmento de negocio desde la URL</span></li>
+                        <li><strong data-es="Nombre del Flujo de Trabajo:" data-en="Workflow Name:">Nombre del Flujo de Trabajo:</strong> "Add Admins to Location and Update Custom Values"</li>
                     </ul>
 
-                    <h3>3.2 Backend Processing</h3>
+                    <h3 data-es="3.2 Procesamiento Backend" data-en="3.2 Backend Processing">3.2 Procesamiento Backend</h3>
                     <ul>
-                        <li><strong>Webhook Execution:</strong> Activation triggers webhook to backend system</li>
-                        <li><strong>Location ID Processing:</strong> Backend checks and validates location ID</li>
-                        <li><strong>Custom Field Updates:</strong>
+                        <li><strong data-es="Ejecución de Webhook:" data-en="Webhook Execution:">Ejecución de Webhook:</strong> <span data-es="La activación desencadena webhook al sistema backend" data-en="Activation triggers webhook to backend system">La activación desencadena webhook al sistema backend</span></li>
+                        <li><strong data-es="Procesamiento de ID de Ubicación:" data-en="Location ID Processing:">Procesamiento de ID de Ubicación:</strong> <span data-es="El backend verifica y valida el ID de ubicación" data-en="Backend checks and validates location ID">El backend verifica y valida el ID de ubicación</span></li>
+                        <li><strong data-es="Actualizaciones de Campos Personalizados:" data-en="Custom Field Updates:">Actualizaciones de Campos Personalizados:</strong>
                             <ul>
-                                <li>Adds business segment value to custom field</li>
-                                <li>Updates subaccount information for risk analysis</li>
+                                <li data-es="Agrega valor del segmento de negocio al campo personalizado" data-en="Adds business segment value to custom field">Agrega valor del segmento de negocio al campo personalizado</li>
+                                <li data-es="Actualiza información de subcuenta para análisis de riesgo" data-en="Updates subaccount information for risk analysis">Actualiza información de subcuenta para análisis de riesgo</li>
                             </ul>
                         </li>
-                        <li><strong>Admin Assignment:</strong> All designated admins are automatically added to subaccount</li>
-                        <li><strong>Database Matching:</strong> System compares subaccount name to database records using associated location ID</li>
-                    </ul>
-                </section>
-
-                <section id="user-management" class="section">
-                    <h2>4. User Management</h2>
-
-                    <h3>4.1 Adding Client Users</h3>
-                    
-                    <div class="media-container">
-                        <iframe src="https://www.loom.com/embed/1654419ba023412bba3549c90c03ff86" allowfullscreen></iframe>
-                    </div>
-
-                    <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/68658870d60a23d7f2799f3a.jpeg" alt="Adding Users">
-                    </div>
-
-                    <ul>
-                        <li><strong>Navigation:</strong> Go to Sites → Forms tab → Preview</li>
-                        <li><strong>Form Completion:</strong> Fill out contact information form for new users</li>
-                        <li><strong>Backend Processing:</strong> Form submission triggers webhook to backend</li>
-                        <li><strong>User Assignment:</strong> System automatically assigns user to correct account</li>
-                    </ul>
-
-                    <h3>4.2 Automated Notifications</h3>
-                    
-                    <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686588706611c0d5883f5ebc.jpeg" alt="Webhook Trigger">
-                    </div>
-
-                    <p><strong>Webhook Trigger:</strong> User addition sends webhook to Savvy Link admin account</p>
-
-                    <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686588e2f9270720e21fbfbf.jpeg" alt="Notifications">
-                    </div>
-
-                    <ul>
-                        <li><strong>WhatsApp Integration:</strong> System sends automated WhatsApp message with instructions</li>
-                        <li><strong>Email Notification:</strong> Automated email sent with setup instructions</li>
-                    </ul>
-                </section>
-
-                <section id="risk-analysis" class="section">
-                    <h2>5. Risk Analysis System</h2>
-
-                    <h3>5.1 Contact Addition Methods</h3>
-
-                    <h4>5.1.1 Minimum Diligence Form</h4>
-                    
-                    <div class="media-container">
-                        <iframe src="https://www.loom.com/embed/7c42cf0bd31c4b1d9b9060facb23a104" allowfullscreen></iframe>
-                    </div>
-
-                    <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/6865896a3cf02daec1501df4.jpeg" alt="Minimum Diligence Form">
-                    </div>
-
-                    <ul>
-                        <li><strong>Location:</strong> Sites → Forms</li>
-                        <li><strong>Process:</strong> Form completion triggers backend processing webhook</li>
-                        <li><strong>Scope:</strong> Basic risk assessment only</li>
-                    </ul>
-
-                    <h4>5.1.2 Basic Diligence Documents</h4>
-                    
-                    <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686589e685221369507ac2af.jpeg" alt="Basic Diligence">
-                    </div>
-
-                    <div class="media-container">
-                        <iframe src="https://www.loom.com/embed/72323e0d2cfd4153aeb1cbb23c539308" allowfullscreen></iframe>
-                    </div>
-
-                    <ul>
-                        <li><strong>Location:</strong> Documents section</li>
-                        <li><strong>Process:</strong> Document completion triggers backend processing</li>
-                        <li><strong>Scope:</strong> Comprehensive risk assessment across 14 business segments</li>
-                    </ul>
-
-                    <h4>5.1.3 Bulk Contact Upload</h4>
-                    
-                    <div class="media-container">
-                        <iframe src="https://www.loom.com/embed/764fd92ffcd94903992b878e331727d5" allowfullscreen></iframe>
-                    </div>
-
-                    <ul>
-                        <li><strong>Requirements:</strong> All required fields must be mapped correctly</li>
-                        <li><strong>Processing:</strong> Add "send to process" tag to trigger backend processing</li>
-                        <li><strong>Validation:</strong> System checks for missing required fields before processing</li>
-                    </ul>
-
-                    <h3>5.2 Risk Assessment Algorithm</h3>
-
-                    <h4>5.2.1 Backend Processing</h4>
-                    <ul>
-                        <li><strong>Data Input:</strong> Contact information received from various sources</li>
-                        <li><strong>Algorithm Execution:</strong> Backend processes data through risk assessment algorithm</li>
-                        <li><strong>Score Generation:</strong> System calculates two key metrics:
-                            <ul>
-                                <li>Minimum score</li>
-                                <li>Riesgo inherente total (Total inherent risk)</li>
-                            </ul>
-                        </li>
-                        <li><strong>Location Assignment:</strong> Results returned to correct location using location ID matching</li>
-                    </ul>
-
-                    <h4>5.2.2 Risk Profile Determination</h4>
-                    
-                    <div class="media-container">
-                        <iframe src="https://www.loom.com/embed/837fe5f627004032833b8263762df080" allowfullscreen></iframe>
-                    </div>
-
-                    <p><strong>Automation Logic:</strong> System applies predefined logic to categorize risk levels:</p>
-                    <ul>
-                        <li>Bajo (Low)</li>
-                        <li>Medio (Medium)</li>
-                        <li>Alto (High)</li>
-                    </ul>
-
-                    <p><strong>Assessment Scope:</strong></p>
-                    <ul>
-                        <li><strong>Basic Diligence:</strong> Risk determined across 14 different business segments</li>
-                        <li><strong>Minimum Diligence:</strong> Limited to checklists and country assessments</li>
-                    </ul>
-                </section>
-
-                <section id="contact-repository" class="section">
-                    <h2>6. Contact Repository and Management</h2>
-
-                    <h3>6.1 SL Admin Account Repository</h3>
-                    <ul>
-                        <li><strong>Function:</strong> Central repository for all processed contacts</li>
-                        <li><strong>Trigger:</strong> All processed contacts automatically added to SL Admin Account</li>
-                        <li><strong>Purpose:</strong> Maintains comprehensive database of all system contacts</li>
-                    </ul>
-
-                    <h3>6.2 Risk Value Updates</h3>
-                    <ul>
-                        <li><strong>Update Trigger:</strong> Any risk value modification in client accounts</li>
-                        <li><strong>Webhook Execution:</strong> Triggers automation in subaccount</li>
-                        <li><strong>Backend Sync:</strong> Webhook sent to backend for contact information upsert</li>
-                        <li><strong>Repository Update:</strong> Contact information updated in repository account</li>
-                    </ul>
-
-                    <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686590c63cf02d1888503bf7.jpeg" alt="Risk Updates">
-                    </div>
-
-                    <h3>6.3 High-Risk Contact Notifications</h3>
-                    
-                    <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686590c6b89cfbc8fc20c418.jpeg" alt="High Risk Notifications">
-                    </div>
-
-                    <ul>
-                        <li><strong>Risk Threshold:</strong> Medium or high-risk contacts trigger notifications</li>
-                        <li><strong>Webhook Process:</strong> Sends webhook to SL Admin account</li>
-                        <li><strong>Email Alerts:</strong> Automated email notifications sent to team members</li>
-                        <li><strong>Content:</strong> Email includes contact origin details and risk information</li>
-                    </ul>
-                </section>
-
-                <section id="public-directory" class="section">
-                    <h2>7. Public Directory and Contact Communication</h2>
-
-                    <h3>7.1 Directory Integration</h3>
-                    <div class="info-box">
-                        <strong>URL:</strong> <a href="https://cdd.nilsdigital.com/" class="url-link" target="_blank">https://cdd.nilsdigital.com/</a>
-                    </div>
-
-                    <ul>
-                        <li><strong>Data Source:</strong> Repository account feeds the public directory</li>
-                        <li><strong>Lookup Method:</strong> Contact ID serves as unique lookup key</li>
-                        <li><strong>Functionality:</strong> Public directory retrieval of contact information and risk profiles</li>
-                    </ul>
-
-                    <h3>7.2 Automated Contact Communication</h3>
-                    
-                    <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686590c6b89cfbc8fc20c418.jpeg" alt="Contact Communication">
-                    </div>
-
-                    <ul>
-                        <li><strong>Processing Trigger:</strong> Risk assessment completion triggers communication workflow</li>
-                        <li><strong>Message Content:</strong>
-                            <ul>
-                                <li>Contact information summary</li>
-                                <li>Direct link to personal risk profile</li>
-                            </ul>
-                        </li>
-                        <li><strong>Delivery Methods:</strong>
-                            <ul>
-                                <li>WhatsApp message via Savvy AI</li>
-                                <li>Email notification</li>
-                            </ul>
-                        </li>
-                        <li><strong>Main Account:</strong> All communications processed through SL Admin account</li>
-                    </ul>
-
-                    <h3>7.3 Contact ID System</h3>
-                    <ul>
-                        <li><strong>Purpose:</strong> Unique identifier for directory lookups</li>
-                        <li><strong>Usage:</strong> Contacts can search their profiles using their unique contact ID</li>
-                        <li><strong>Benefits:</strong> Simplified access for both individuals and businesses to verify risk profiles</li>
-                    </ul>
-                </section>
-
-                <section id="customer-support" class="section">
-                    <h2>8. Customer Support System</h2>
-
-                    <h3>8.1 Savvy AI Chatbot</h3>
-                    <ul>
-                        <li><strong>Function:</strong> AI-powered customer support chatbot</li>
-                        <li><strong>Training:</strong> Equipped to handle most common questions and inquiries</li>
-                        <li><strong>Escalation:</strong> Redirects complex queries to human support system</li>
-                    </ul>
-
-                    <h3>8.2 Human Support Pipeline</h3>
-                    <div class="info-box">
-                        <strong>URL:</strong> <a href="https://savvysoporte.nilsdigital.com/inicia" class="url-link" target="_blank">https://savvysoporte.nilsdigital.com/inicia</a>
-                    </div>
-
-                    <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686591723cf02d67d7503c96.jpeg" alt="Support Landing">
-                    </div>
-
-                    <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686591a9dbe4a52cb1b69778.jpeg" alt="Support Form">
-                    </div>
-
-                    <div class="media-container">
-                        <img src="https://storage.googleapis.com/msgsndr/stoLOEGDIvEDY3xQI4B8/media/686591ec6611c066aa3f734a.jpeg" alt="Support Pipeline">
-                    </div>
-
-                    <ul>
-                        <li><strong>Escalation Trigger:</strong> AI chatbot unable to resolve query</li>
-                        <li><strong>Landing Page:</strong> User redirected to dedicated support form page</li>
-                        <li><strong>Form Submission:</strong> Support request form completion triggers notifications</li>
-                        <li><strong>Team Notification:</strong> Email alerts sent to support team members</li>
-                        <li><strong>Pipeline Addition:</strong> Contact automatically added to support pipeline for tracking</li>
-                    </ul>
-                </section>
-
-                <section id="system-integration" class="section">
-                    <h2>9. System Integration Points</h2>
-
-                    <h3>9.1 Key Webhooks</h3>
-                    <ul>
-                        <li>Account activation webhook</li>
-                        <li>User addition webhook</li>
-                        <li>Risk processing webhook</li>
-                        <li>Risk update webhook</li>
-                        <li>Support request webhook</li>
-                    </ul>
-
-                    <h3>9.2 External Integrations</h3>
-                    <ul>
-                        <li>WhatsApp messaging system</li>
-                        <li>Email notification system</li>
-                        <li>Backend risk assessment algorithm</li>
-                        <li>Public directory system</li>
-                    </ul>
-                </section>
-
-                <section id="security" class="section">
-                    <h2>10. Security and Compliance</h2>
-
-                    <h3>10.1 Access Control</h3>
-                    <ul>
-                        <li>Password-protected landing page</li>
-                        <li>Email activation requirement for all accounts</li>
-                        <li>Unique contact ID system for directory access</li>
-                    </ul>
-
-                    <h3>10.2 Data Processing</h3>
-                    <ul>
-                        <li>Automated webhook security</li>
-                        <li>Location ID validation</li>
-                        <li>Required field validation for bulk uploads</li>
-                        <li>Risk-based notification system for high-risk contacts</li>
-                    </ul>
-                </section>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        }
-
-        // Auto-highlight active section in navigation
-        window.addEventListener('scroll', () => {
-            const sections = document.querySelectorAll('.section');
-            const navLinks = document.querySelectorAll('.nav-link');
-            
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
-                if (window.pageYOffset >= sectionTop - 100) {
-                    current = section.getAttribute('id');
-                }
-            });
-
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === '#' + current) {
-                    link.classList.add('active');
-                }
-            });
-        });
-
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = link.getAttribute('href').substring(1);
-                const targetSection = document.getElementById(targetId);
-                if (targetSection) {
-                    targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-                
-                // Close sidebar on mobile after clicking
-                if (window.innerWidth <= 768) {
-                    document.getElementById('sidebar').classList.remove('open');
-                }
-            });
-        });
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', (e) => {
-            const sidebar = document.getElementById('sidebar');
-            const sidebarToggle = document.querySelector('.sidebar-toggle');
-            
-            if (window.innerWidth <= 768 && 
-                !sidebar.contains(e.target) && 
-                !sidebarToggle.contains(e.target)) {
-                sidebar.classList.remove('open');
-            }
-        });
-    </script>
-</body>
-</html>
+                        <li><strong data-es="Asignación de Administradores:" data-en="Admin Assignment:">Asignación de Administradores:</strong> <span data-es="
